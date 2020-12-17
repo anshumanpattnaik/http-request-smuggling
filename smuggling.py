@@ -93,7 +93,7 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
         else:
             _style_status = colored(constants.ok, constants.green, attrs=['bold'])
     except Exception as _:
-        elapsed_time = time.time()+"s"
+        elapsed_time = str(time.time())+"s"
         _style_elapsed_time = "{}".format(colored(elapsed_time, constants.yellow, attrs=['bold']))
         _style_status = colored(constants.dis_connected, constants.red, attrs=['bold'])
 
