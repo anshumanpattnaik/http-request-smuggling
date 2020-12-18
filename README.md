@@ -36,19 +36,19 @@ optional arguments:
                         - 2
 `````````````````````````````````````````````````````````````````````````````````````````````````
 
-## Scan one Url
+### Scan one Url
 
 ````````````````````````````````````
 python3 smuggling.py -u <URL>
 ````````````````````````````````````
 
-## Scan list of Urls
+### Scan list of Urls
 
 ````````````````````````````````````
 python3 smuggling.py -urls <URLs.txt>
 ````````````````````````````````````
 
-# Important
+### Important
 If you feel the detection payload needs to change to make it more accurate then you can update the payload in payloads.json file of detection array.
 
 ``````````````````````````````````````````````````````````````````
