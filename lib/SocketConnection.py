@@ -65,10 +65,7 @@ class SocketConnection():
             return True
         return False
     
-    def response_time(self,startTime):
-        return round((time.time() - startTime) % 60, 2)
-    
-    def closeConnection(self):
+    def close_connection(self):
         if(self.ssl_enable):
             self.ssl.close()
             del self.ssl

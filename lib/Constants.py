@@ -21,19 +21,9 @@
 # SOFTWARE.
 class Constants():
     def __init__(self):
-        self.get = 'GET'
-        self.post = 'POST'
-        self.host = 'host'
-        self.port = 'port'
-        self.url = 'url'
         self.transfer_encoding = 'transfer_encoding'
         self.te_key = 'te_key'
         self.te_value = 'te_value'
-        self.modified_chunked = 'modified_chunked'
-        self.default_chunked = 'chunked'
-        self.default_type = '(CL.TE/TE.CL)'
-        self.clte = 'CL.TE'
-        self.tecl = 'TE.CL'
         self.permute = 'permute'
         self.type = 'type'
         self.payload = 'payload'
@@ -58,8 +48,11 @@ class Constants():
         self.reports = 'reports'
         self.output = '$Output'
         self.extenstion = '.txt'
+        self.file_not_found = 'File not found'
+        self.python_version_error_msg = "HRS Detection tool reuires Python 3.x"
         self.invalid_method_type = 'Invalid method type, please enter correct http method (eg GET or POST)'
-        self.target_website_unrechable = 'Target website unreachable : 504 Gateway Timeout Error'
+        self.invalid_url_options = "Invalid options specify either (-u) or (--urls)"
+        self.invalid_retry_count = 'Invalid retry count, please specify at least 1 retry count'
+        self.invalid_target_url = "Invalid target url, please specify the valid url by following this example - http[s]://example.com"
         self.keyboard_interrupt = 'KeyboardInterrupt'
-        self.done = 'DONE'
         self.dis_connected = 'DISCONNECTED'

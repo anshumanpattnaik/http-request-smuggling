@@ -25,54 +25,48 @@ import os
 from termcolor import cprint, colored
 from pyfiglet import figlet_format
 from urllib.parse import urlparse
+from .Constants import Constants
 import colorama
 colorama.init()
 
 class Utils():
     def __init__(self):
-        self.title = "Smuggling"
+        self.title = "{:<1}{}".format("","Smuggling")
         self.author = "Anshuman Pattnaik / @anspattnaik"
-        self.github = "https://github.com/anshumanpattnaik/http-rquest-smuggling"
         self.blog = "https://hackbotone.com/blog/http-request-smuggling"
         self.version = "0.1"
 
-    def getStartTime(self):
-        return time.time()
-
     def print_header(self):
-        cprint(figlet_format(self.title, font='ogre'), 'green', attrs=['bold'])
+        cprint(figlet_format(self.title.center(20), font='cybermedium'), 'red', attrs=['bold'])
         
-        header_key_color = 'yellow'
-        header_value_color = 'red'
+        header_key_color = Constants().blue
+        header_value_color = Constants().yellow
 
-        print("{:<1}{:<23}{:<17}{}".format('', colored('Author', header_key_color, attrs=['bold']), colored(':', header_key_color, attrs=['bold']), colored(self.author, header_value_color, attrs=['bold'])))
-        print("{:<1}{:<23}{:<17}{}".format('', colored('Github', header_key_color, attrs=['bold']) , colored(':', header_key_color, attrs=['bold']), colored(self.github, header_value_color, attrs=['bold'])))
-        print("{:<1}{:<23}{:<17}{}".format('', colored('Blog', header_key_color, attrs=['bold']), colored(':', header_key_color, attrs=['bold']), colored(self.blog, header_value_color, attrs=['bold'])))
-        print("{:<1}{:<23}{:<17}{}".format('', colored('Version', header_key_color, attrs=['bold']), colored(':', header_key_color, attrs=['bold']), colored(self.version, header_value_color, attrs=['bold'])))
+        print("{:<12}{:<23}{:<17}{}".format('', colored('Author', header_key_color, attrs=['bold']), colored(':', header_key_color, attrs=['bold']), colored(self.author, header_value_color, attrs=['bold'])))
+        print("{:<12}{:<23}{:<17}{}".format('', colored('Blog', header_key_color, attrs=['bold']), colored(':', header_key_color, attrs=['bold']), colored(self.blog, header_value_color, attrs=['bold'])))
+        print("{:<12}{:<23}{:<17}{}".format('', colored('Version', header_key_color, attrs=['bold']), colored(':', header_key_color, attrs=['bold']), colored(self.version, header_value_color, attrs=['bold'])))
+        print("{:<1}{}".format('',colored("___________________________________________________________________________________",'cyan',attrs=['bold'])))
         print("\n")
 
-    def writePayload(self, fileName, payload):
+    def write_payload(self, fileName, payload):
         if not os.path.exists(os.path.dirname(fileName)):
             try:
                 os.makedirs(os.path.dirname(fileName))
             except OSError as e:
                 print(e)
-
-        with open(fileName, "w") as f:
-            f.write(payload)
+        with open(fileName, "wb") as f:
+            f.write(bytes(str(payload),'utf-8'))
 
     def url_parser(self, url):
         parser = {}
         try:
             u_parser = urlparse(url)
-
-            host = u_parser.hostname
-            
             if u_parser.scheme == 'https':
                 port = 443
             if u_parser.scheme == 'http':
                 port = 80
 
+            host = u_parser.hostname
             parser["host"] = host
             parser["port"] = port
             
@@ -81,11 +75,13 @@ class Utils():
                 parser["path"] = path
             else:
                 parser["path"] = '/'
-
             return json.dumps(parser)
         except:
-            return "Invalid target url, please specify the valid url by following this example - http[s]://example.com"
+            return Constants().invalid_target_url
 
     def read_target_list(self, file_name):
-        with open(file_name) as urls_list:
-            return [u.rstrip('\n') for u in urls_list]
+        try:
+            with open(file_name) as urls_list:
+                return [u.rstrip('\n') for u in urls_list]
+        except FileNotFoundError as _:
+            return Constants().file_not_found

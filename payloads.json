@@ -308,17 +308,5 @@
 			"payload": "\r\n0\r\n\r\n\r\nG",
 			"content_length": 6
 		}
-	],
-	"confirm": [
-		{
-			"type": "CL.TE",
-			"payload": "\r\n0\r\n\r\nPOST / HTTP/1.1\r\nHost: <COLLAB_URL>\r\nX: XGET / HTTP/1.1",
-			"content_length": 57
-		},
-		{
-			"type": "TE.CL",
-			"payload": "\r\n5e\r\nPOST /404 HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 15\r\n\r\nx=1\r\n0\r\n\r\n",
-			"content_length": 4
-		}
 	]
 }
