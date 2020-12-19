@@ -14,7 +14,6 @@ It's quite important to know some of the legal disclaimers before scanning any o
 git clone https://github.com/anshumanpattnaik/http-request-smuggling.git
 cd http-request-smuggling
 pip3 install -r requirements.txt
-python3 smuggling.py -u TARGET_URL
 `````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
 
 ### Options
