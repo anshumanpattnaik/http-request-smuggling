@@ -33,7 +33,7 @@ class Utils():
     def __init__(self):
         self.title = "{:<1}{}".format("","Smuggling")
         self.author = "Anshuman Pattnaik / @anspattnaik"
-        self.blog = "https://hackbotone.com/blog/http-request-smuggling"
+        self.blog = "https://hackbotone.com/blog/http-request-smuggling-detection-tool"
         self.version = "0.1"
 
     def print_header(self):
