@@ -18,7 +18,7 @@ pip3 install -r requirements.txt
 
 ### Options
 `````````````````````````````````````````````````````````````````````````````````````````````````
-usage: smuggling.py [-h] [-u URL] [-urls URLS] [-t TIMEOUT] [-m METHOD]
+usage: smuggle.py [-h] [-u URL] [-urls URLS] [-t TIMEOUT] [-m METHOD]
                     [-r RETRY]
 
 HTTP Request Smuggling vulnerability detection tool
@@ -39,12 +39,12 @@ optional arguments:
 
 ### Scan one Url
 ````````````````````````````````````
-python3 smuggling.py -u <URL>
+python3 smuggle.py -u <URL>
 ````````````````````````````````````
 
 ### Scan list of Urls
 ````````````````````````````````````
-python3 smuggling.py -urls <URLs.txt>
+python3 smuggle.py -urls <URLs.txt>
 ````````````````````````````````````
 
 ### Important
