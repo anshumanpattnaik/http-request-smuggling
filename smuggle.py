@@ -69,7 +69,6 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
 
     print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time, _style_status), end="\r", flush=True)
 
-    # Calculating the start time and end time to detect HRS
     start_time = time.time()
         
     try:
