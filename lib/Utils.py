@@ -71,8 +71,12 @@ class Utils():
             parser["port"] = port
             
             path = u_parser.path
+            query = '?'+u_parser.query if u_parser.query else ''
+            fragment = '#'+u_parser.fragment if u_parser.fragment else ''
+            uri_path = f'{path}{query}{fragment}'
+
             if len(path) > 0:
-                parser["path"] = path
+                parser["path"] = uri_path
             else:
                 parser["path"] = '/'
             return json.dumps(parser)

@@ -150,8 +150,8 @@ if __name__ == "__main__":
                 host = json_res['host']
                 port = json_res['port']
                 path = json_res['path']
-
-                # If host is invalid then it will exit
+                    
+                #If host is invalid then it will exit
                 if host == None:
                     print(f"Invalid host - {host}")
                     sys.exit(1)
