@@ -69,13 +69,14 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
 
     print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time, _style_status), end="\r", flush=True)
 
+    # Calculating the start time and end time to detect HRS
+    start_time = time.time()
+        
     try:
         connection = SocketConnection()
         connection.connect(host, port, timeout)
         connection.send_payload(smuggle_body)
 
-        # Calculating the start time and end time to detect HRS
-        start_time = time.time()
         response = connection.receive_data().decode("utf-8")
         end_time = time.time()
 
@@ -105,7 +106,7 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
         else:
             _style_status = colored(constants.ok, constants.green, attrs=['bold'])
     except Exception as e:
-        elapsed_time = str(round(time.time() % 60, 2))+"s"
+        elapsed_time = str(round((time.time() - start_time) % 60, 2))+"s"
         _style_elapsed_time = "{}".format(colored(elapsed_time, constants.yellow, attrs=['bold']))
         
         error = f'{constants.dis_connected} → {e}'
