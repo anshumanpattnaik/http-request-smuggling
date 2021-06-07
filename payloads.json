@@ -41,6 +41,14 @@
 			}
 		},
 		{
+			"type": "space3",
+			"content_length_key": "Content-Length:",
+			"transfer_encoding": {
+				"te_key": "Transfer-Encoding[space here]:",
+				"te_value": "chunked"
+			}
+		},
+		{
 			"type": "nameprefix1",
 			"content_length_key": "Content-Length:",
 			"transfer_encoding": {
