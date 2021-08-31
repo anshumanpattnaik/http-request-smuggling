@@ -75,11 +75,15 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
         connection = SocketConnection()
         connection.connect(host, port, timeout)
         connection.send_payload(smuggle_body)
+        dataTmp=connection.receive_data()
+        # fix error: "DISCONNECTED → 'NoneType' object has no attribute 'decode'"
+        response=None
+        if dataTmp != None:
+            response = dataTmp.decode("utf-8")
 
-        response = connection.receive_data().decode("utf-8")
         end_time = time.time()
 
-        if len(response.split()) > 0:
+        if response != None and len(response.split()) > 0:
             status_code = response.split()[1]
         else:
             status_code = 'NO RESPONSE'
