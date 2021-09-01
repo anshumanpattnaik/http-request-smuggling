@@ -19,10 +19,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import socket, ssl
+import socket
+import ssl
 import time
 
-class SocketConnection():
+
+class SocketConnection:
+    def __init__(self):
+        self.context = None
+        self.data = None
+        self.s = None
+        self.ssl = None
+        self.ssl_enable = False
+
     def connect(self, host, port, timeout):
         try:
             if port == 443:
@@ -31,42 +40,41 @@ class SocketConnection():
                 self.s = socket.create_connection((host, port))
                 self.ssl = self.context.wrap_socket(self.s, server_hostname=host)
                 self.ssl.settimeout(timeout)
-                self.is_connected = True
             else:
-                self.ssl_enable = False
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.settimeout(timeout)
                 self.s.connect((host, port))
-                self.is_connected = True
             return self.s
-        except:
+        except socket.error as msg:
+            print(f'Socket Error → {msg}')
             return None
 
     def send_payload(self, payload):
-        if(self.ssl_enable):
+        if self.ssl_enable:
             self.ssl.send(str(payload).encode())
         else:
             self.s.send(str(payload).encode())
-        
-    def receive_data(self, bufferSize=1024):
+
+    def receive_data(self, buffer_size=1024):
         try:
-            if(self.ssl_enable):
+            if self.ssl_enable:
                 self.ssl.settimeout(None)
-                self.data = self.ssl.recv(bufferSize)
+                self.data = self.ssl.recv(buffer_size)
             else:
                 self.s.settimeout(None)
-                self.data = self.s.recv(bufferSize)
-        except Exception:
-            self.data = None
+                self.data = self.s.recv(buffer_size)
+        except socket.timeout:
+            print('Error: Socket timeout')
         return self.data
 
-    def detect_hrs_vulnerability(self,startTime,timeout):
-        if time.time() - startTime >= timeout:
+    @staticmethod
+    def detect_hrs_vulnerability(start_time, timeout):
+        if time.time() - start_time >= timeout:
             return True
         return False
-    
+
     def close_connection(self):
-        if(self.ssl_enable):
+        if self.ssl_enable:
             self.ssl.close()
             del self.ssl
         self.s.close()

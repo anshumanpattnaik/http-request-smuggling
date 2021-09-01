@@ -21,19 +21,17 @@
 # SOFTWARE.
 import argparse
 import json
-import queue
 import time
 import os
 import sys
 import re
-import threading
-from termcolor import cprint, colored
-from pyfiglet import figlet_format
+from termcolor import colored
 from lib.Utils import Utils
 from lib.Constants import Constants
 from lib.SocketConnection import SocketConnection
 from pathlib import Path
 import colorama
+
 colorama.init()
 
 utils = Utils()
@@ -48,15 +46,17 @@ parser.add_argument("-m", "--method", help="set HTTP Methods, i.e (GET or POST),
 parser.add_argument("-r", "--retry", help="set the retry count to re-execute the payload, default - 2")
 args = parser.parse_args()
 
-def hrs_detection(host, port, path, method, permute_type, content_length_key, te_key, te_value, smuggle_type, content_length, payload, timeout, results_queue):
+
+def hrs_detection(_host, _port, _path, _method, permute_type, content_length_key, te_key, te_value, smuggle_type,
+                  content_length, payload, _timeout):
     headers = ''
-    headers += '{} {} HTTP/1.1{}'.format(method, path, constants.crlf)
-    headers += 'Host: {}{}'.format(host, constants.crlf)
-    headers += '{} {}{}'.format(content_length_key,content_length, constants.crlf)
+    headers += '{} {} HTTP/1.1{}'.format(_method, _path, constants.crlf)
+    headers += 'Host: {}{}'.format(_host, constants.crlf)
+    headers += '{} {}{}'.format(content_length_key, content_length, constants.crlf)
     headers += '{}{}{}'.format(te_key, te_value, constants.crlf)
     smuggle_body = headers + payload
 
-    permute_type = "["+permute_type+"]"
+    permute_type = "[" + permute_type + "]"
     elapsed_time = "-"
 
     # Print Styling
@@ -67,13 +67,14 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
     _style_elapsed_time = "{}".format(colored(elapsed_time, constants.yellow, attrs=['bold']))
     _style_status = colored(constants.detecting, constants.green, attrs=['bold'])
 
-    print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time, _style_status), end="\r", flush=True)
+    print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time,
+                                     _style_status), end="\r", flush=True)
 
     start_time = time.time()
-        
+
     try:
         connection = SocketConnection()
-        connection.connect(host, port, timeout)
+        connection.connect(_host, _port, _timeout)
         connection.send_payload(smuggle_body)
 
         response = connection.receive_data().decode("utf-8")
@@ -87,34 +88,36 @@ def hrs_detection(host, port, path, method, permute_type, content_length_key, te
 
         connection.close_connection()
 
-        # The detection logic is based on the time delay technique, if the elasped time is more than the timeout value
-        # then the target host status will change to [HRS → Vulnerable], but most of the time chances are it can be false positive
-        # So to confirm the vulnerability you can use burp-suite turbo intruder and try your own payloads.
-        # https://portswigger.net/web-security/request-smuggling/finding
-        
-        elapsed_time = str(round((end_time - start_time) % 60, 2))+"s"
+        # The detection logic is based on the time delay technique, if the elapsed time is more than the timeout value
+        # then the target host status will change to [HRS → Vulnerable], but most of the time chances are it can be
+        # false positive So to confirm the vulnerability you can use burp-suite turbo intruder and try your own
+        # payloads. https://portswigger.net/web-security/request-smuggling/finding
+
+        elapsed_time = str(round((end_time - start_time) % 60, 2)) + "s"
         _style_elapsed_time = "{}".format(colored(elapsed_time, constants.yellow, attrs=['bold']))
 
-        is_hrs_found = connection.detect_hrs_vulnerability(start_time, timeout)
-        
+        is_hrs_found = connection.detect_hrs_vulnerability(start_time, _timeout)
+
         # If HRS found then it will write the payload to the reports directory
         if is_hrs_found:
             _style_status = colored(constants.delayed_response_msg, constants.red, attrs=['bold'])
-            reports = constants.reports + '/{}/{}-{}{}'.format(host, permute_type, smuggle_type, constants.extenstion)
-            utils.write_payload(reports, smuggle_body)
+            _reports = constants.reports + '/{}/{}-{}{}'.format(_host, permute_type, smuggle_type, constants.extenstion)
+            utils.write_payload(_reports, smuggle_body)
         else:
             _style_status = colored(constants.ok, constants.green, attrs=['bold'])
-    except Exception as e:
-        elapsed_time = str(round((time.time() - start_time) % 60, 2))+"s"
+    except Exception as exception:
+        elapsed_time = str(round((time.time() - start_time) % 60, 2)) + "s"
         _style_elapsed_time = "{}".format(colored(elapsed_time, constants.yellow, attrs=['bold']))
-        
-        error = f'{constants.dis_connected} → {e}'
+
+        error = f'{constants.dis_connected} → {exception}'
         _style_status = colored(error, constants.red, attrs=['bold'])
 
-    print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time, _style_status))
-    
+    print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time,
+                                     _style_status))
+
     # There is a delay of 1 second after executing each payload
     time.sleep(1)
+
 
 if __name__ == "__main__":
     # If the python version less than 3.x then it will exit
@@ -134,12 +137,12 @@ if __name__ == "__main__":
         target_urls = list()
         if args.urls:
             urls = utils.read_target_list(args.urls)
-            
+
             if constants.file_not_found in urls:
                 print(f"[{args.urls}] not found in your local directory")
                 sys.exit(1)
             target_urls = urls
-        
+
         if args.url:
             target_urls.append(args.url)
 
@@ -150,12 +153,12 @@ if __name__ == "__main__":
                 host = json_res['host']
                 port = json_res['port']
                 path = json_res['path']
-                    
-                #If host is invalid then it will exit
-                if host == None:
+
+                # If host is invalid then it will exit
+                if host is None:
                     print(f"Invalid host - {host}")
                     sys.exit(1)
-                
+
                 method = args.method.upper() if args.method else "POST"
                 pattern = re.compile('GET|POST')
                 if not (pattern.match(method)):
@@ -173,22 +176,36 @@ if __name__ == "__main__":
                 square_left_sign = colored('[', constants.cyan, attrs=['bold'])
                 plus_sign = colored("+", constants.green, attrs=['bold'])
                 square_right_sign = colored(']', constants.cyan, attrs=['bold'])
-                square_sign = "{}{}{:<16}".format(square_left_sign,plus_sign,square_right_sign)
+                square_sign = "{}{}{:<16}".format(square_left_sign, plus_sign, square_right_sign)
 
                 target_header_style_config = '{:<1}{}{:<25}{:<16}{:<10}'
-                print(target_header_style_config.format('', square_sign, colored("Target URL", constants.magenta, attrs=['bold']), colored(":", constants.magenta, attrs=['bold']), colored(url, constants.blue, attrs=['bold'])))
-                print(target_header_style_config.format('', square_sign, colored("Method", constants.magenta, attrs=['bold']), colored(":", constants.magenta, attrs=['bold']), colored(method, constants.blue, attrs=['bold'])))
-                print(target_header_style_config.format('', square_sign, colored("Retry", constants.magenta, attrs=['bold']), colored(":", constants.magenta, attrs=['bold']), colored(retry, constants.blue, attrs=['bold'])))
-                print(target_header_style_config.format('', square_sign, colored("Timeout", constants.magenta, attrs=['bold']), colored(":", constants.magenta, attrs=['bold']), colored(timeout, constants.blue, attrs=['bold'])))
-                
-                reports = os.path.join(str(Path().absolute()),constants.reports,host)
-                print(target_header_style_config.format('', square_sign, colored("HRS Reports", constants.magenta, attrs=['bold']), colored(":", constants.magenta, attrs=['bold']), colored(reports, constants.blue, attrs=['bold'])))
+                print(target_header_style_config.format('', square_sign,
+                                                        colored("Target URL", constants.magenta, attrs=['bold']),
+                                                        colored(":", constants.magenta, attrs=['bold']),
+                                                        colored(url, constants.blue, attrs=['bold'])))
+                print(target_header_style_config.format('', square_sign,
+                                                        colored("Method", constants.magenta, attrs=['bold']),
+                                                        colored(":", constants.magenta, attrs=['bold']),
+                                                        colored(method, constants.blue, attrs=['bold'])))
+                print(target_header_style_config.format('', square_sign,
+                                                        colored("Retry", constants.magenta, attrs=['bold']),
+                                                        colored(":", constants.magenta, attrs=['bold']),
+                                                        colored(retry, constants.blue, attrs=['bold'])))
+                print(target_header_style_config.format('', square_sign,
+                                                        colored("Timeout", constants.magenta, attrs=['bold']),
+                                                        colored(":", constants.magenta, attrs=['bold']),
+                                                        colored(timeout, constants.blue, attrs=['bold'])))
+
+                reports = os.path.join(str(Path().absolute()), constants.reports, host)
+                print(target_header_style_config.format('', square_sign,
+                                                        colored("HRS Reports", constants.magenta, attrs=['bold']),
+                                                        colored(":", constants.magenta, attrs=['bold']),
+                                                        colored(reports, constants.blue, attrs=['bold'])))
                 print()
 
                 payloads = open('payloads.json')
                 data = json.load(payloads)
 
-                results_queue = queue.Queue()
                 payload_list = list()
 
                 for permute in data[constants.permute]:
@@ -196,19 +213,14 @@ if __name__ == "__main__":
                         # Based on the retry value it will re-execute the same payload again
                         for _ in range(retry):
                             transfer_encoding_obj = permute[constants.transfer_encoding]
-                            hrs_detection(host,
-                                        port,
-                                        path,
-                                        method,
-                                        permute[constants.type],
-                                        permute[constants.content_length_key],
-                                        transfer_encoding_obj[constants.te_key],
-                                        transfer_encoding_obj[constants.te_value],
-                                        d[constants.type],
-                                        d[constants.content_length],
-                                        d[constants.payload],
-                                        timeout,
-                                        results_queue)
+                            hrs_detection(host, port, path, method, permute[constants.type],
+                                          permute[constants.content_length_key],
+                                          transfer_encoding_obj[constants.te_key],
+                                          transfer_encoding_obj[constants.te_value],
+                                          d[constants.type],
+                                          d[constants.content_length],
+                                          d[constants.payload],
+                                          timeout)
             except ValueError as _:
                 print(result)
     except KeyboardInterrupt as e:

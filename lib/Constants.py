@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-class Constants():
+class Constants:
     def __init__(self):
         self.transfer_encoding = 'transfer_encoding'
         self.te_key = 'te_key'
@@ -53,6 +53,7 @@ class Constants():
         self.invalid_method_type = 'Invalid method type, please enter correct http method (eg GET or POST)'
         self.invalid_url_options = "Invalid options specify either (-u) or (--urls)"
         self.invalid_retry_count = 'Invalid retry count, please specify at least 1 retry count'
-        self.invalid_target_url = "Invalid target url, please specify the valid url by following this example - http[s]://example.com"
+        self.invalid_target_url = "Invalid target url, please specify the valid url by following this example - " \
+                                  "http[s]://example.com"
         self.keyboard_interrupt = 'KeyboardInterrupt'
         self.dis_connected = 'DISCONNECTED'
