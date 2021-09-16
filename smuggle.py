@@ -148,6 +148,8 @@ if __name__ == "__main__":
             target_urls.append(args.url)
 
         for url in target_urls:
+            if "http://" not in url or "https://" not in url:
+                url="https://" + url
             result = utils.url_parser(url)
             try:
                 json_res = json.loads(result)
