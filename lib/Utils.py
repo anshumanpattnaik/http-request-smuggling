@@ -77,6 +77,8 @@ class Utils:
             u_parser = urlparse(url)
             if u_parser.scheme == 'https':
                 port = 443
+            if u_parser.port is not None:
+                port = u_parser.port
 
             host = u_parser.hostname
             parser["host"] = host
