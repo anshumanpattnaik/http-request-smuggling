@@ -14,7 +14,7 @@
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THEn
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -67,8 +67,7 @@ def hrs_detection(_host, _port, _path, _method, permute_type, content_length_key
     _style_elapsed_time = "{}".format(colored(elapsed_time, constants.yellow, attrs=['bold']))
     _style_status = colored(constants.detecting, constants.green, attrs=['bold'])
 
-    print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time,
-                                     _style_status), end="\r", flush=True)
+    print(_style_space_config.format(_style_permute_type, _style_smuggle_type, _style_status_code, _style_elapsed_time, _style_status), end="\r", flush=True)
 
     start_time = time.time()
 
@@ -100,9 +99,30 @@ def hrs_detection(_host, _port, _path, _method, permute_type, content_length_key
 
         # If HRS found then it will write the payload to the reports directory
         if is_hrs_found:
-            _style_status = colored(constants.delayed_response_msg, constants.red, attrs=['bold'])
-            _reports = constants.reports + '/{}/{}-{}{}'.format(_host, permute_type, smuggle_type, constants.extenstion)
-            utils.write_payload(_reports, smuggle_body)
+            with open('payloads.json', 'r') as file:
+            	json_data = json.load(file)
+            payload2_value, content2_length =  get_payload_and_content_length(smuggle_type, json_data)
+            headers = ''
+            headers += '{} {} HTTP/1.1{}'.format(_method, _path, constants.crlf)
+            headers += 'Host: {}{}'.format(_host, constants.crlf)
+            headers += '{} {}{}'.format(content_length_key, content2_length, constants.crlf)
+            headers += '{}{}{}'.format(te_key, te_value, constants.crlf)
+            smuggle2_body = headers + payload2_value
+            connection2 = SocketConnection()
+            connection2.connect(_host, _port, _timeout)
+            connection2.send_payload(smuggle2_body)
+            response2 = connection2.receive_data().decode("utf-8")
+            connection3 = SocketConnection()
+            connection3.connect(_host, _port, _timeout)
+            connection3.send_payload(smuggle2_body)
+            response3 = connection3.receive_data().decode("utf-8")
+            connection2.close_connection()
+            connection3.close_connection()
+            if "404" in str(response3):
+            	_style_status = colored(constants.delayed_response_msg, constants.red, attrs=['bold'])
+            	_reports = constants.reports + '/{}/{}-{}{}'.format(_host, permute_type, smuggle_type, constants.extenstion)
+            	poc = "########## PAYLOAD REQUEST ##########\n"+smuggle2_body +"\n\n####################\n########## RESPONSE ##########\n" + str(response3)
+            	utils.write_payload(_reports, poc)
         else:
             _style_status = colored(constants.ok, constants.green, attrs=['bold'])
     except Exception as exception:
@@ -117,7 +137,14 @@ def hrs_detection(_host, _port, _path, _method, permute_type, content_length_key
 
     # There is a delay of 1 second after executing each payload
     time.sleep(1)
-
+    
+def get_payload_and_content_length(type_value, json_data):
+    for entry in json_data.get("poc", []):
+        if entry.get("type") == type_value:
+            payload_value = entry.get("payload")
+            content_length = entry.get("content_length")
+            return payload_value, content_length
+    return "Payload and Content-Length not found for the specified type", None
 
 if __name__ == "__main__":
     # If the python version less than 3.x then it will exit

